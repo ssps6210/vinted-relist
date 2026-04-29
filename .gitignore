@@ -1,0 +1,9 @@
+config.json
+cookies.json
+backup/
+session/
+venv/
+bookmarklet.txt
+__pycache__/
+*.pyc
+.DS_Store
