@@ -12,16 +12,19 @@ Vinted's search ranks newer listings higher. Re-listing your items is the free w
 
 ---
 
-## 🔄 How It Works (3 Phases)
+## 🔄 How It Works (3 Phases + Auto-Click)
 
 ```
-Phase 1 — Backup    Scrape all item data (title, description, price, photos)
-                    → saved to backup/ folder locally
+Phase 1 — Backup       Scrape all item data (title, description, price, photos)
+                       → saved to backup/ folder locally
 
-Phase 2 — Delete    Automatically delete each item from Vinted one by one
+Phase 2 — Delete       Automatically delete each item from Vinted one by one
 
-Phase 3 — Re-list   Fill in new listings automatically via a browser bookmarklet
-                    (you only need to pick Category / Brand / Size / Condition)
+Phase 3 — Re-list      Fill in new listings via a browser bookmarklet
+  (bookmarklet)        (auto-fills: title, description, price, photos)
+
+Phase 3 — Auto-Click   Chrome JS injection to auto-select dropdowns
+  (auto_click.py)      (Category / Brand / Condition)
 ```
 
 Each phase pauses and asks for confirmation before continuing — so you can stop and resume at any point.
@@ -79,11 +82,19 @@ The script will open a Chrome window and guide you through each phase interactiv
 - Deletes each listing one by one
 - Falls back to manual deletion with a prompt if automation fails
 
-### Phase 3 — Re-list (Bookmarklet)
+### Phase 3 — Re-list (Bookmarklet + Auto-Click 整合)
 - Starts a local server on `localhost:8765`
-- Generates a **bookmarklet** saved to `bookmarklet.txt`
-- You add the bookmarklet to Chrome once, then click it on each new listing page to auto-fill title, description, price, and photos
-- You only need to manually select: **Category**, **Brand**, **Size**, **Condition**
+- Bookmarklet 已在 Chrome 工具列「Fill Vinted」（只需做一次）
+- Each item: bookmarklet auto-fills title, description, price, and photos
+- Then auto-clicks dropdowns (Category / Brand / Condition) via PyAutoGUI
+- Reads `category_config.json` for item-specific Category/Brand/Condition
+- All operations have random delays (Bezier curves) to simulate human behaviour
+- **Safety:** Ctrl+C to abort, or move mouse to top-left corner (failsafe)
+
+### Auto-Click (`auto_click.py`)
+- 可獨立執行 `python3 auto_click.py` 進行座標校準
+- First-time calibration: follow interactive prompts to click dropdown positions
+- Saves `coords.json` for subsequent sessions
 
 ---
 
@@ -91,7 +102,9 @@ The script will open a Chrome window and guide you through each phase interactiv
 
 ```
 vinted-relist/
-├── vinted_relist.py       Main script
+├── vinted_relist.py       Main script (Phase 1 & 2)
+├── auto_click.py          Phase 3 auto-click (Chrome JS injection)
+├── category_config.json   Item → Category/Brand/Condition mapping
 ├── config.json            Your credentials (NOT committed — create from example)
 ├── config.example.json    Template for config.json
 ├── requirements.txt       Python dependencies
@@ -105,7 +118,7 @@ vinted-relist/
 ## ⚙️ Requirements
 
 - Python 3.10+
-- Google Chrome (for Phase 3 bookmarklet)
+- Google Chrome with 「Fill Vinted」bookmarklet in toolbar (set up once)
 - A Vinted account with active listings
 
 ---

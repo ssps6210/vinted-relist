@@ -1,2 +1,3 @@
-playwright==1.44.0
-nodriver
+playwright
+pyautogui
+pillow

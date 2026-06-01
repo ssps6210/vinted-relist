@@ -7,3 +7,6 @@ bookmarklet.txt
 __pycache__/
 *.pyc
 .DS_Store
+bookmark_pos.json
+category_config.json
+bookmark_setup.png
